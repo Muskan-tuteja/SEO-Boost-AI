@@ -4,15 +4,34 @@ const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
-    unique: true
+    trim: true
   },
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    trim: true,
+    lowercase: true
   },
   password: {
     type: String,
     required: true
-  }
-});
+  },
+  plan: {
+    type: String,
+    enum: ["free", "premium"],
+    default: "free"
+  },
+  analysisCount: {
+    type: Number,
+    default: 0
+  },
+  lastAnalysisDate: {   
+        type: Date,
+        default: null
+    }
+}, { timestamps: true }); 
+
+const User = mongoose.model("User", userSchema);
+export default User;
+
