@@ -13,11 +13,11 @@ const generateToken = (id) => {
 
 
 // Register user
-export const register = async (req, res) => {
+export const registerUser = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const {name, email, password } = req.body;
 
-    if ((!username || !email || !password))
+    if ((!name || !email || !password))
       return res
         .status(400)
         .json({ success: false, message: "All fields are required" });
@@ -35,13 +35,13 @@ export const register = async (req, res) => {
 
     // Create new user
     const newUser = new User({
-      username,
+      name,
       email,
       password: hashedPassword
     });
     await newUser.save();
     const token = generateToken(newUser._id);
-    return res.status(201).json({ success: true, message: "User registered successfully", token, user});
+    return res.status(201).json({ success: true, message: "User registered successfully", token, user: newUser});
 
   } catch (error) {
     console.error("Error registering user:", error);
