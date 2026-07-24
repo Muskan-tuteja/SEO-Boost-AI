@@ -1,21 +1,44 @@
 //  add a keyword to track
-
-export const addKeywordToTrack = async (keyword: string, url: string, domain: string, token: string) => {
+import Keyword from "../models/Keyword.js";
+export const addKeywordToTrack = async (req,res) => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/rank/addKeyword`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify({ keyword, url, domain })
-    });
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error adding keyword to track:", error);
-    throw error;
-  }
+    const { keyword, url, domain } = req.body;
+
+    if (!keyword || !url) return res.status(400).json({success: false, message: "Keyword and Url are required"}) 
+  
+
+        // Extract domain from URL
+
+        let domain;
+        try{
+            const urlObj = new URL(url.startWith("http")? url: `https://${url}`)
+            domain= urlObj.hostname.replace("www.", "")
+        }catch{
+            return res.status(400).json({success: false, message: "Invalid URL"})
+
+
+        }
+        // Check if already tracking this keyword + domain
+
+        const existingKeyword = await Keyword.findOne({ userId: req.userId, keyword: keyword.toLowerCase().trim(), domain });
+        if (existingKeyword) {
+            return res.status(400).json({success: false, message: "Already tracking this keyword for the given domain"});
+        }
+
+        // Create new keyword entry
+        const trackingKeyword = await Keyword.create({
+            userId: req.userId,
+            keyword: keyword.toLowerCase().trim(),
+            url: url.startWith("http")? url: `https://${url}`,
+            domain,
+            status: "checking",
+        });
+     res.status(201).json({ success: true, message: "Keyword added to tracking" , tracking: trackingKeyword});
+     
+    } catch (error) {
+        console.error("Error adding keyword to track:", error);
+        throw error;
+    }
 };
 // get all keywords for a user
 export const getKeywords = async (token: string) => {
