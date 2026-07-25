@@ -30,7 +30,7 @@ const keywordTrackingSchema = new mongoose.Schema({
   competitors: [competitorSchema],
   active: { type: Boolean, default: true },
   lastChecked: { type: Date, default: null },
-  status: { type: String, enum: ["pending", "checked", "completed","failed"], default: "pending" },
+  status: { type: String, enum: ["pending", "checking", "completed","failed"], default: "pending" },
 }, { timestamps: true });  
 
 

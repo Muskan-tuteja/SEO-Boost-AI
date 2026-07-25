@@ -23,8 +23,9 @@ export async function keywordTracking(tracking) {
       tracking.currentPage = result.data.page;
       tracking.competitors = result.data.competitors;
 
-      tracking.lastChecked = new Date();
-      tracking.status = "completed";
+     tracking.status = "completed";
+tracking.lastChecked = new Date();
+await tracking.save();
       // update stats
 
       tracking.positionChange = prev && result.data.position ? prev - result.data.position:0;
@@ -36,7 +37,7 @@ export async function keywordTracking(tracking) {
     //   update History
 
     const historyEntry = {
-        data : today,
+        date : today,
         position: result.data.position,
         page: result.data.page,
         title: result.data.title,
@@ -55,6 +56,8 @@ export async function keywordTracking(tracking) {
     tracking.status = "failed"
     await tracking.save().catch(()=>{})
     return{ success: false, error: err.message}
+
+    console.log(result.error);
     
   }
 }

@@ -44,7 +44,7 @@ for(let gPage =0; gPage<5; gPage++){
         try{
             await page.waitForSelector('h3', {timeout: 8000})
             await page.waitForTimeout(1500)
-            pageResults = await page.evaluate(()=> Array.from(document.querySelectorAll ("h3")).map(()=>{
+            pageResults = await page.evaluate(()=> Array.from(document.querySelectorAll ("h3")).map((h3)=>{
                 let a = h3.closest('a')
                 if(!a){
                     let p = h3.parentElement
@@ -62,8 +62,8 @@ for(let gPage =0; gPage<5; gPage++){
                 }
                 if(!a || !a.href.startsWith("http") || a.href.includes('google.')) return null
                 let s = ""
-                c = a.parentElement
-                for(let j =0 ; j<6 && j++; c =c.parentElement){
+               let c = a.parentElement
+                for(let j = 0 ; j<6 && c; j++, c =c.parentElement){
                     const txt = c.innerText || ""
                     if(txt.length > h3. innerText.length+50){
                     s = (txt.split("\n").find((l)=>l.length > 30 && !l.includes(h3.innerText.substring(0,20)))|| "").trim().substring(0,300)
