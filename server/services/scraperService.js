@@ -20,7 +20,8 @@ export async function scrapeUrl(url) {
 
     const loadTime = Date.now() - startTime;
 
-    await page.waitForTimeout(2000);
+    await page.waitForLoadState("networkidle").catch(() => {});
+    await page.waitForTimeout(1500);
 
     const scrapedData = await page.evaluate(() => {
       const getMeta = (name) => {
@@ -45,8 +46,8 @@ export async function scrapeUrl(url) {
       const charset =
         document.querySelector("meta[charset]")?.getAttribute("charset") || "";
 
-      const h1Texts = [...document.querySelectorAll("h1")].map((e) =>
-        e.textContent?.trim() || ""
+      const h1Texts = [...document.querySelectorAll("h1")].map(
+        (e) => e.textContent?.trim() || ""
       );
 
       const headings = {
@@ -60,6 +61,7 @@ export async function scrapeUrl(url) {
       };
 
       const allLinks = [...document.querySelectorAll("a[href]")];
+
       const host = window.location.hostname;
 
       let internal = 0;
@@ -147,6 +149,8 @@ export async function scrapeUrl(url) {
       },
     };
   } catch (error) {
+    console.log("Scraper Error:", error.message);
+
     if (browser) {
       await browser.close().catch(() => {});
     }
