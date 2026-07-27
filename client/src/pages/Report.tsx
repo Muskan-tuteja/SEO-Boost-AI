@@ -3,7 +3,9 @@ import { useParams, Link } from "react-router-dom";
 import ScoreGauge from "../components/ScoreGauge";
 import IssueCard from "../components/IssueCard";
 import { ArrowLeft, Globe, Clock, FileText, Image, Link2, Heading, Tag, AlertCircle, ExternalLink, Type, Search } from "lucide-react";
-import { dummyWebsiteAnalysis } from "../assets/assets";
+
+import { useApp } from "../context/AppContext";
+
 
 interface AnalysisData {
     _id: string;
@@ -56,18 +58,35 @@ interface AnalysisData {
 }
 
 export default function Report() {
+
+    const {api} = useApp()
     const { id } = useParams();
     const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
     const [loading, setLoading] = useState(true);
-    const [error] = useState("");
+    const [error, setError] = useState("");
     const [activeTab, setActiveTab] = useState("overview");
 
     const fetchAnalysis = async () => {
-        setTimeout(() => {
-            setAnalysis(dummyWebsiteAnalysis);
-            setLoading(false);
-        }, 1500);
+        try{
+            const res = await api.get(`/api/analysis/${id}`)
+            if(res.data.success){
+                if(res.data.analysis.status === "processing"){
+                    // Poll for completion
+
+                    setTimeout(fetchAnalysis, 2000)
+                    return
+                }
+                setAnalysis(res.data.analysis)
+            }else{
+                setError("Analysis not found")
+            }
+        }catch{
+            setError("Failed to load analysis")
+
+        }
+        setLoading(false)
     };
+
 
     const getScoreClass = (s: number) => {
         if (s >= 80) return "score-good";
@@ -198,7 +217,7 @@ export default function Report() {
                                     <p className="text-[10px] text-muted-foreground">Page Size</p>
                                 </div>
                                 <div className="bg-muted/30 border border-border rounded-xl p-3 text-center">
-                                    <p className="text-lg font-bold text-accent">{analysis.wordCount.toLocaleString()}</p>
+                                    <p className="text-lg font-bold text-accent">{(analysis.wordCount ?? 0).toLocaleString()}</p>
                                     <p className="text-[10px] text-muted-foreground">Words</p>
                                 </div>
                             </div>
@@ -344,7 +363,7 @@ export default function Report() {
                                     <Type size={20} className="text-warning" />
                                     Top Keywords
                                 </h3>
-                                {analysis.keywords.length > 0 ? (
+                               {(analysis.keywords?.length ?? 0) > 0 ? (
                                     <div className="space-y-2">
                                         {analysis.keywords.map((kw, i) => (
                                             <div key={kw.word} className="flex items-center gap-3">
@@ -407,7 +426,7 @@ export default function Report() {
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center p-3 bg-muted/50 border border-border rounded-xl">
                                         <span className="text-sm text-muted-foreground">Word Count</span>
-                                        <span className="font-bold text-foreground">{analysis.wordCount.toLocaleString()}</span>
+                                        <span className="font-bold text-foreground">(analysis.wordCount ?? 0).toLocaleString()</span>
                                     </div>
                                     <div className="flex justify-between items-center p-3 bg-muted/50 border border-border rounded-xl">
                                         <span className="text-sm text-muted-foreground">Page Size</span>

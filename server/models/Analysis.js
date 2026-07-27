@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 
-const issuseSchema = new mongoose.Schema({
-    serverity : {type: String, enum:["critical", "warning", "info"], required: true},
+const issueSchema = new mongoose.Schema({
+    severity : {type: String, enum:["critical", "warning", "info"], required: true},
     category : {type: String, required: true},
     message : {type: String, required: true},
     recommendation : {type: String, required: true},
@@ -13,11 +13,12 @@ const analysisSchema = new mongoose.Schema({
     userId: {type: mongoose.Schema.Types.ObjectId, ref: "User", required : true},
     url: {type: String, required: true},
     overallScore: {type: Number, min:0, max:100, default: 0},
-    categories:{
-        seo: {type:Number, default:0},
-        performance: {type: Number, default:0},
-        accessibility: {type: Number, default:0}
-    },
+   categories:{
+    seo:{type:Number,default:0},
+    performance:{type:Number,default:0},
+    accessibility:{type:Number,default:0},
+    bestPractices:{type:Number,default:0},
+},
     metaData:{
         title: {type:String, default: ""},
         description : {type: String, default: ""},
@@ -49,20 +50,23 @@ const analysisSchema = new mongoose.Schema({
     },
     images: {
         total: {type:Number, default:0},
-        missingAt: {type:Number, default:0},
+        missingAlt: {type:Number, default:0},
         withAlt: {type:Number, default:0},
     },
-    Keywords:[
-        {
-            word: String,
-            count: Number,
-            density: Number      
-          }
-    ],
-    issues: [issuseSchema],
+   keywords: [
+  {
+    word: String,
+    count: Number,
+    density: Number,
+  }
+],
+    issues: [issueSchema],
     loadTime:{type: Number, default:0},
     pageSize:{type: Number, default:0},
-    word:{type: Number, default:0},
+  wordCount: {
+  type: Number,
+  default: 0
+},
 
     status : {type: String, enum: ["pending", "processing","completed", "failed"], default: "pending"}
 
