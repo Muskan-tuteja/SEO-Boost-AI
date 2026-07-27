@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes.js';
 // import rankRouter from './routes/rankRoutes.js';
 import rankRoutes from './routes/rankRoutes.js';
 import analysisRouter from './routes/analysisRoutes.js';
+import { startRankTrackingCron } from './cron/rankTrackingCron.js';
 
 // DNS fix — connectDB() se PEHLE set karo
 dns.setServers(['8.8.8.8', '8.8.4.4']);
@@ -24,6 +25,9 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/rank', rankRoutes);
 app.use('/api/analysis', analysisRouter);
+
+// Start cron jobs
+startRankTrackingCron()
 
 
 const PORT = process.env.PORT || 5000;
