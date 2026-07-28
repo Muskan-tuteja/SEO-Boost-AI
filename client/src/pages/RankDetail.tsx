@@ -17,7 +17,7 @@ import {
   Calendar,
   Loader2,
 } from "lucide-react";
-import { dummyWebsiteRanking } from "../assets/assets";
+
 import { useApp } from "../context/AppContext";
 
 interface RankHistoryEntry {
@@ -269,7 +269,7 @@ export default function RankDetail() {
       };
     return {
       icon: <Minus size={16} />,
-      text: "—",
+      text: "0",
       class: "text-muted-foreground",
     };
   };
