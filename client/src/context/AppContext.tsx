@@ -80,7 +80,12 @@ export function AppProvider({children}: {children: ReactNode;}) {
 
    const login = async (email: string, password: string) => {
     try {
-        const response = await axios.post(`${BACKEND_URL}/api/auth/login`, {email, password });
+        const response = await axios.post(`${BACKEND_URL}/api/auth/login`, {
+  email,
+  password,
+});
+
+console.log("Login Response:", response.data);
         if (response.data.success) {
             setToken(response.data.token);
             setUser(response.data.user);
