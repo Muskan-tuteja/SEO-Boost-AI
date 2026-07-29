@@ -14,7 +14,7 @@ export async function rankTracker(keyword, targetDomain) {
         params: {
           engine: "google",
           q: keyword,
-          num: 100,
+          num: 10,
           hl: "en",
           gl: "us",
           api_key: process.env.SERPAPI_KEY,
