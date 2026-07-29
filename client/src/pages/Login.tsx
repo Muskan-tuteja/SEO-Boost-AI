@@ -15,16 +15,21 @@ export default function Login({ state }: { state: string }) {
 
     const navigate= useNavigate();
 
-    const handleSubmit = async (e: React.SubmitEvent) => {
-        e.preventDefault();
-        setLoading(true);
+   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-        let result;
-        if (isLoginState) {
-            result = await login(email, password);
-        } else {
-            result = await register(name, email, password);
-        }
+    console.log("Submit clicked");
+    console.log("isLoginState:", isLoginState);
+
+    setLoading(true);
+
+    let result;
+       if (isLoginState) {
+    result = await login(email, password);
+} else {
+    console.log("Calling register...");
+    result = await register(name, email, password);
+}
 
        if (result.success) {
     const redirect = searchParams.get("redirect") || "/dashboard";

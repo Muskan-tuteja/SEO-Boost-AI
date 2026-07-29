@@ -27,7 +27,10 @@ interface AppContextType {
   logout: () => void;
 }
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://seo-boost-ai-server.onrender.com";
+const BACKEND_URL =
+  import.meta.env.VITE_BACKEND_URL || "https://seo-boost-ai-server.onrender.com";
+
+console.log("BACKEND_URL =", BACKEND_URL);
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
