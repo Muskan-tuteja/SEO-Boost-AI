@@ -43,22 +43,31 @@ console.log("req.user:", req.user);
     try {
       // Step 1: Scrape the URL with BrowserBase
 
-      const scrapeResult = await scrapeUrl(validUrl.href);
-      if (!scrapeResult.success) {
-        analysis.status = "failed";
-        await analysis.save();
-        return;
-      }
+      console.log("========== SCRAPING START ==========");
 
-      // step 2: Analyze with gemini ai
-      const aiResult = await analyzeSeoData(scrapeResult.data);
+const scrapeResult = await scrapeUrl(validUrl.href);
 
-      if (!aiResult.success) {
-        analysis.status = "failed";
+console.log("SCRAPE RESULT:", scrapeResult);
 
-        await analysis.save();
-        return;
-      }
+if (!scrapeResult.success) {
+  console.log("SCRAPER FAILED");
+  analysis.status = "failed";
+  await analysis.save();
+  return;
+}
+
+console.log("========== GEMINI START ==========");
+
+const aiResult = await analyzeSeoData(scrapeResult.data);
+
+console.log("AI RESULT:", aiResult);
+
+if (!aiResult.success) {
+  console.log("GEMINI FAILED");
+  analysis.status = "failed";
+  await analysis.save();
+  return;
+}
 
       //  Step 3 : save results
 
