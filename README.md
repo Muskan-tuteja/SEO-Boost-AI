@@ -40,17 +40,11 @@ SEO Boost AI is a full-stack AI-powered SEO analysis platform that helps users a
 
 ![Analyze](./screenshots/analyze.png)
 
-### 📄 SEO Report
-
-![Report](./screenshots/report.png)
 
 ### 📈 Rank Tracker
 
 ![Rank Tracker](./screenshots/rank-tracker.png)
 
-### 📜 Analysis History
-
-![History](./screenshots/history.png)
 
 ---
 
