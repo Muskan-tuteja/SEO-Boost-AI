@@ -47,23 +47,17 @@ console.log("req.user:", req.user);
 
 const scrapeResult = await scrapeUrl(validUrl.href);
 
-console.log("SCRAPE RESULT:", scrapeResult);
-
 if (!scrapeResult.success) {
-  console.log("SCRAPER FAILED");
+  console.error("SCRAPER FAILED:", scrapeResult.error);
   analysis.status = "failed";
   await analysis.save();
   return;
 }
 
-console.log("========== GEMINI START ==========");
-
 const aiResult = await analyzeSeoData(scrapeResult.data);
 
-console.log("AI RESULT:", aiResult);
-
 if (!aiResult.success) {
-  console.log("GEMINI FAILED");
+  console.error("GEMINI FAILED:", aiResult.error);
   analysis.status = "failed";
   await analysis.save();
   return;
