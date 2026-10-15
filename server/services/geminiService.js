@@ -132,7 +132,7 @@ Extract top 10 keywords by frequency from the page content.`;
         );
 
         response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
+      model: "gemini-3.5-flash-lite",
           contents: [
             {
               role: "user",
@@ -169,24 +169,24 @@ Extract top 10 keywords by frequency from the page content.`;
       throw new Error("Gemini returned an empty response.");
     }
 
-    const analysis = JSON.parse(response.text);
+        const analysis = JSON.parse(response.text);
 
     return {
       success: true,
       data: analysis,
     };
-  }  catch (error) {
-  console.error("Gemini analysis error:", {
-    message: error.message,
-    status: error.status,
-    code: error.code,
-    details: error.errorDetails,
-  });
+  } catch (error) {
+    console.error("Gemini analysis error:", {
+      message: error.message,
+      status: error.status,
+      code: error.code,
+      details: error.errorDetails,
+    });
 
-  return {
-    success: false,
-    error: error.message,
-  };
-}
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
 
 }
