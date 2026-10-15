@@ -1,7 +1,9 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
 
 const seoAnalysisSchema = {
   type: Type.OBJECT,
@@ -15,7 +17,12 @@ const seoAnalysisSchema = {
         accessibility: { type: Type.INTEGER },
         bestPractices: { type: Type.INTEGER },
       },
-      required: ["seo", "performance", "accessibility", "bestPractices"],
+      required: [
+        "seo",
+        "performance",
+        "accessibility",
+        "bestPractices",
+      ],
     },
     keywords: {
       type: Type.ARRAY,
@@ -39,12 +46,16 @@ const seoAnalysisSchema = {
             format: "enum",
             enum: ["critical", "warning", "info"],
           },
-
           category: { type: Type.STRING },
           message: { type: Type.STRING },
           recommendation: { type: Type.STRING },
         },
-        required: ["severity", "category", "message", "recommendation"],
+        required: [
+          "severity",
+          "category",
+          "message",
+          "recommendation",
+        ],
       },
     },
   },
@@ -111,21 +122,65 @@ Severity levels must be exactly one of: "critical", "warning", or "info".
 Provide 5-15 issues sorted by severity (critical first). Be specific and actionable with recommendations.
 Extract top 10 keywords by frequency from the page content.`;
 
-    const response = await ai.models.generateContent({
-      model: "gemma-4-31b-it",
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: seoAnalysisSchema,
-      },
-    });
+    let response;
+    const maxAttempts = 3;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        console.log(
+          `Gemini SEO analysis attempt ${attempt}/${maxAttempts}`
+        );
+
+        response = await ai.models.generateContent({
+        model: "gemini-3.5-flash-lite",
+          contents: [
+            {
+              role: "user",
+              parts: [{ text: prompt }],
+            },
+          ],
+          config: {
+            responseMimeType: "application/json",
+            responseSchema: seoAnalysisSchema,
+          },
+        });
+
+        break;
+      } catch (error) {
+        const status = Number(error.status || error.code);
+        const isTemporary = [429, 500, 502, 503, 504].includes(status);
+
+        if (!isTemporary || attempt === maxAttempts) {
+          throw error;
+        }
+
+        const delay = attempt * 3000;
+
+        console.warn(
+          `Gemini temporary error ${status}. ` +
+          `Retrying in ${delay / 1000} seconds...`
+        );
+
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+    }
+
+    if (!response?.text) {
+      throw new Error("Gemini returned an empty response.");
+    }
 
     const analysis = JSON.parse(response.text);
 
-    return { success: true, data: analysis };
+    return {
+      success: true,
+      data: analysis,
+    };
   } catch (error) {
-    console.error("Gemini analysis error : ", error.message);
-    return{success:false, error: error.message}
-    
+    console.error("Gemini analysis error:", error.message);
+
+    return {
+      success: false,
+      error: error.message,
+    };
   }
 }
